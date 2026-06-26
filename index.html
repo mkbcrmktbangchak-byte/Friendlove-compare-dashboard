@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inthanin — Week-over-Week Comparison | Jun 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --red:       #ED1C24;
+    --red-dark:  #c0141b;
+    --red-mid:   #f55a60;
+    --red-light: #fde8e9;
+    --red-pale:  #fff5f5;
+    --w1:        #3EB655;
+    --w2:        #FFF100;
+    --w2-dark:   #8a7100;
+    --w1-light:  #d4f0d9;
+    --w2-light:  #fffde0;
+    --black:     #111111;
+    --gray-dark: #333333;
+    --gray-mid:  #666666;
+    --gray-soft: #999999;
+    --gray-line: #e5e5e5;
+    --gray-bg:   #f7f7f7;
+    --white:     #ffffff;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.07);
+    --radius:    10px;
+  }
+  body { font-family:'Sarabun','TH Sarabun New',Arial,sans-serif; background:var(--gray-bg); color:var(--black); font-size:15px; line-height:1.6; }
+
+  /* HEADER */
+  .header { background:var(--black); color:var(--white); padding:32px 40px 28px; }
+  .header-inner { max-width:1280px; margin:0 auto; }
+  .header-eyebrow { display:inline-block; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:20px; padding:3px 14px; font-size:12px; font-weight:600; letter-spacing:0.06em; margin-bottom:10px; color:rgba(255,255,255,0.88); }
+  .header h1 { font-size:28px; font-weight:700; margin-bottom:3px; }
+  .header-sub { font-size:14px; color:rgba(255,255,255,0.65); margin-bottom:18px; }
+  .header-tags { display:flex; gap:20px; flex-wrap:wrap; }
+  .header-tags span { font-size:13px; color:rgba(255,255,255,0.8); display:flex; align-items:center; gap:6px; }
+  .tag-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+  .td-w1 { background:var(--w1); }
+  .td-w2 { background:var(--w2); }
+
+  /* WEEK LEGEND */
+  .week-legend { display:flex; gap:20px; margin-top:12px; }
+  .wk-badge { display:inline-flex; align-items:center; gap:8px; padding:6px 14px; border-radius:20px; font-size:12px; font-weight:700; }
+  .wk-w1 { background:rgba(62,182,85,0.18); color:#2a8545; border:1px solid rgba(62,182,85,0.35); }
+  .wk-w2 { background:rgba(255,241,0,0.25); color:#8a7100; border:1px solid rgba(255,241,0,0.6); }
+
+  /* LAYOUT */
+  .main { max-width:1280px; margin:0 auto; padding:28px 40px 48px; }
+  @media (max-width:900px) { .main { padding:16px; } .header { padding:20px 16px; } }
+  .section-label { font-size:10px; font-weight:700; letter-spacing:0.10em; text-transform:uppercase; color:var(--gray-soft); margin:32px 0 12px; }
+  .section-label:first-child { margin-top:0; }
+
+  /* KPI COMPARISON GRID */
+  .kpi-compare-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; }
+  .kpi-cmp {
+    background:var(--white); border-radius:var(--radius); padding:16px 18px;
+    box-shadow:var(--shadow-sm); border:1px solid var(--gray-line); position:relative; overflow:hidden;
+  }
+  .kpi-cmp::after { content:''; position:absolute; top:0;left:0;right:0; height:3px; background:var(--red); }
+  .kpi-cmp-label { font-size:10px; font-weight:700; color:var(--gray-soft); letter-spacing:0.05em; text-transform:uppercase; margin-bottom:10px; }
+  .kpi-cmp-row { display:flex; justify-content:space-between; align-items:flex-end; gap:8px; margin-bottom:5px; }
+  .kpi-val { font-size:22px; font-weight:700; color:var(--black); line-height:1; }
+  .kpi-wk { font-size:10px; font-weight:600; padding:2px 7px; border-radius:10px; }
+  .wk1-tag { background:var(--w1-light); color:var(--red); }
+  .wk2-tag { background:var(--w2-light); color:var(--w2-dark); }
+  .kpi-delta {
+    display:inline-flex; align-items:center; gap:4px;
+    font-size:12px; font-weight:700; padding:3px 10px;
+    border-radius:20px; margin-top:8px;
+  }
+  .delta-up   { background:#e6f4ea; color:#1e6b36; }
+  .delta-down { background:var(--w1-light); color:var(--red-dark); }
+  .delta-flat { background:#ebebeb; color:var(--gray-dark); }
+
+  /* CARDS */
+  .card { background:var(--white); border-radius:var(--radius); padding:20px 22px; box-shadow:var(--shadow-sm); border:1px solid var(--gray-line); }
+  .card-title { font-size:14px; font-weight:700; color:var(--black); margin-bottom:3px; }
+  .card-sub   { font-size:12px; color:var(--gray-soft); margin-bottom:14px; }
+
+  /* GRIDS */
+  .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; }
+  .grid-eq2 { display:grid; grid-template-columns:2fr 1fr; gap:14px; }
+  @media (max-width:900px) { .grid-2,.grid-3,.grid-eq2 { grid-template-columns:1fr; } }
+
+  /* TABLE */
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  thead th { text-align:left; font-size:10px; font-weight:700; color:var(--gray-soft); letter-spacing:0.06em; text-transform:uppercase; padding:0 8px 8px; border-bottom:2px solid var(--gray-line); }
+  thead th:not(:first-child) { text-align:right; }
+  tbody tr:hover { background:#f9f9f9; }
+  tbody td { padding:8px 8px; border-bottom:1px solid #f2f2f2; }
+  tbody td:not(:first-child) { text-align:right; }
+  tfoot tr { background:#f7f7f7; }
+  tfoot td { font-weight:700; padding:8px 8px; border-top:2px solid var(--gray-line); font-size:13px; }
+  tfoot td:not(:first-child) { text-align:right; }
+
+  /* DELTA CELL */
+  .d-up   { color:#1e6b36; font-weight:700; }
+  .d-down { color:var(--red); font-weight:700; }
+  .d-flat { color:var(--gray-soft); }
+
+  /* SHOP FORMAT */
+  .format-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:12px; }
+  .fmt-box { border-radius:8px; padding:12px 10px; text-align:center; border:1px solid var(--gray-line); }
+  .fmt-box .fmt-name { font-size:11px; font-weight:700; color:var(--gray-mid); margin-bottom:6px; }
+  .fmt-row { display:flex; justify-content:space-between; font-size:13px; margin-bottom:2px; }
+  .fmt-val-w1 { font-weight:700; color:#3B3B3B; }
+  .fmt-val-w2 { font-weight:700; color:var(--w2-dark); }
+
+  /* INSIGHT */
+  .insight-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:12px; }
+  .insight-box { background:var(--white); border-radius:var(--radius); padding:16px 18px; border:1px solid var(--gray-line); box-shadow:var(--shadow-sm); display:flex; gap:14px; align-items:flex-start; }
+  .insight-icon { width:34px; height:34px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; flex-shrink:0; }
+  .ic-up   { background:#e6f4ea; color:#1e6b36; }
+  .ic-down { background:var(--w1-light); color:var(--red); }
+  .ic-flat { background:#ebebeb; color:var(--gray-dark); }
+  .ic-warn { background:#fff3cd; color:#7a5400; }
+  .insight-title { font-size:13px; font-weight:700; margin-bottom:4px; }
+  .insight-desc  { font-size:12px; color:var(--gray-dark); line-height:1.5; }
+
+  /* DATA FLAG */
+  .data-flag { background:#fff8e1; border:1px solid #ffe082; border-radius:6px; padding:8px 12px; font-size:11px; color:#7a5400; margin-top:10px; }
+
+  hr { border:none; border-top:1px solid var(--gray-line); margin:28px 0; }
+  .footer { text-align:center; font-size:11px; color:var(--gray-soft); padding-top:20px; }
+  .footer strong { color:var(--red); }
+  canvas { display:block; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <div class="header-eyebrow">INTHANIN · PERSONALIZE PROMOTION · WEEK-OVER-WEEK COMPARISON</div>
+    <h1>Friend Love — 2nd Cup at 20 THB</h1>
+    <div class="header-sub">Week 1 vs Week 2 · Campaign Performance Comparison</div>
+    <div class="header-tags">
+      <span><span class="tag-dot td-w1"></span>Week 1: 15–17 June 2026</span>
+      <span><span class="tag-dot td-w2"></span>Week 2: 22–24 June 2026</span>
+      <span><span class="tag-dot" style="background:rgba(255,255,255,0.5)"></span>1,170 Selected Shops</span>
+    </div>
+    <div class="week-legend">
+      <span class="wk-badge wk-w1">Wk1 · 15–17 Jun</span>
+      <span class="wk-badge wk-w2">Wk2 · 22–24 Jun</span>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- KPI COMPARISON -->
+  <div class="section-label">Key Performance Indicators — Week-over-Week</div>
+  <div class="kpi-compare-grid">
+
+    <div class="kpi-cmp">
+      <div class="kpi-cmp-label">Total Redemptions</div>
+      <div class="kpi-cmp-row">
+        <div><div class="kpi-val" style="color:#3B3B3B">4,553</div><span class="kpi-wk wk1-tag">Wk1</span></div>
+        <div style="text-align:right"><div class="kpi-val" style="color:var(--w2-dark)">5,284</div><span class="kpi-wk wk2-tag">Wk2</span></div>
+      </div>
+      <div class="kpi-delta delta-up">▲ +731 &nbsp;(+16.1%)</div>
+    </div>
+
+    <div class="kpi-cmp">
+      <div class="kpi-cmp-label">Unique Customers</div>
+      <div class="kpi-cmp-row">
+        <div><div class="kpi-val" style="color:#3B3B3B">4,307</div><span class="kpi-wk wk1-tag">Wk1</span></div>
+        <div style="text-align:right"><div class="kpi-val" style="color:var(--w2-dark)">4,950</div><span class="kpi-wk wk2-tag">Wk2</span></div>
+      </div>
+      <div class="kpi-delta delta-up">▲ +643 &nbsp;(+14.9%)</div>
+    </div>
+
+    <div class="kpi-cmp">
+      <div class="kpi-cmp-label">Net Promo Sales ex.vat (฿)</div>
+      <div class="kpi-cmp-row">
+        <div><div class="kpi-val" style="color:#3B3B3B">365,864</div><span class="kpi-wk wk1-tag">Wk1</span></div>
+        <div style="text-align:right"><div class="kpi-val" style="color:var(--w2-dark)">422,008</div><span class="kpi-wk wk2-tag">Wk2</span></div>
+      </div>
+      <div class="kpi-delta delta-up">▲ +฿56,144 &nbsp;(+15.3%)</div>
+    </div>
+
+    <div class="kpi-cmp">
+      <div class="kpi-cmp-label">Total Discount ex.vat (฿)</div>
+      <div class="kpi-cmp-row">
+        <div><div class="kpi-val" style="color:#3B3B3B">173,014</div><span class="kpi-wk wk1-tag">Wk1</span></div>
+        <div style="text-align:right"><div class="kpi-val" style="color:var(--w2-dark)">200,893</div><span class="kpi-wk wk2-tag">Wk2</span></div>
+      </div>
+      <div class="kpi-delta delta-down">▲ +฿27,879 &nbsp;(+16.1%)</div>
+    </div>
+
+    <div class="kpi-cmp">
+      <div class="kpi-cmp-label">Avg. Ticket Size ex.vat (฿)</div>
+      <div class="kpi-cmp-row">
+        <div><div class="kpi-val" style="color:#3B3B3B">80.4</div><span class="kpi-wk wk1-tag">Wk1</span></div>
+        <div style="text-align:right"><div class="kpi-val" style="color:var(--w2-dark)">79.9</div><span class="kpi-wk wk2-tag">Wk2</span></div>
+      </div>
+      <div class="kpi-delta delta-flat">▼ −0.5 THB &nbsp;(−0.6%)</div>
+      <div style="font-size:10px;color:#999;margin-top:4px">Benchmark: Pay Day 83.8 THB</div>
+    </div>
+
+    <div class="kpi-cmp">
+      <div class="kpi-cmp-label">Shop Participation</div>
+      <div class="kpi-cmp-row">
+        <div><div class="kpi-val" style="color:#3B3B3B">65.0%</div><span class="kpi-wk wk1-tag">Wk1</span></div>
+        <div style="text-align:right"><div class="kpi-val" style="color:var(--w2-dark)">70.8%</div><span class="kpi-wk wk2-tag">Wk2</span></div>
+      </div>
+      <div class="kpi-delta delta-up">▲ +5.8pp &nbsp;(761→828 shops)</div>
+    </div>
+
+  </div>
+
+  <!-- DAILY COMPARISON -->
+  <div class="section-label">Daily Redemptions — Week-over-Week</div>
+  <div class="grid-eq2">
+    <div class="card">
+      <div class="card-title">Daily Redemptions Comparison</div>
+      <div class="card-sub">Red = Week 1 (15–17 Jun) · Green = Week 2 (22–24 Jun)</div>
+      <div style="position:relative;height:240px"><canvas id="dailyCompareChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Daily Breakdown Table</div>
+      <div class="card-sub">Redemptions by day</div>
+      <table>
+        <thead><tr><th>Day</th><th>Week 1</th><th>Week 2</th><th>Delta</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Day 1</strong><br><span style="font-size:10px;color:var(--gray-soft)">15 Jun / 22 Jun</span></td>
+            <td>1,384</td>
+            <td style="color:var(--w2-dark);font-weight:600">2,090</td>
+            <td class="d-up">+706 (+51.0%)</td>
+          </tr>
+          <tr>
+            <td><strong>Day 2</strong><br><span style="font-size:10px;color:var(--gray-soft)">16 Jun / 23 Jun</span></td>
+            <td><strong>1,874</strong> <span style="font-size:10px;color:var(--red)">Peak</span></td>
+            <td>1,908</td>
+            <td class="d-up">+34 (+1.8%)</td>
+          </tr>
+          <tr>
+            <td><strong>Day 3</strong><br><span style="font-size:10px;color:var(--gray-soft)">17 Jun / 24 Jun</span></td>
+            <td>1,295</td>
+            <td>1,286</td>
+            <td class="d-flat">−9 (−0.7%)</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr><td>Total</td><td>4,553</td><td style="color:var(--w2-dark)">5,284</td><td class="d-up">+731 (+16.1%)</td></tr>
+        </tfoot>
+      </table>
+      <p style="font-size:11px;color:var(--gray-soft);margin-top:10px">
+        Wk2 Day 1 surged +51% — peak pattern shifted earlier vs Wk1 where Day 2 was highest.
+      </p>
+    </div>
+  </div>
+
+  <!-- NET SALES + DISCOUNT TABLE -->
+  <div class="section-label">Daily Net Sales &amp; Discount — Week-over-Week</div>
+  <div class="card">
+    <div class="card-title">Daily Sales Performance Comparison (ex.vat, THB)</div>
+    <div class="card-sub">Net Promotion Sales and Discount by day — Week 1 vs Week 2</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Day</th>
+          <th>Wk1 Redeem.</th><th>Wk1 Sales (฿)</th><th>Wk1 Disc. (฿)</th>
+          <th style="border-left:2px solid var(--gray-line)">Wk2 Redeem.</th><th>Wk2 Sales (฿)</th><th>Wk2 Disc. (฿)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Day 1</strong></td>
+          <td>1,384</td><td>113,006</td><td>52,589</td>
+          <td style="border-left:2px solid var(--gray-line);color:var(--w2-dark);font-weight:600">2,090</td>
+          <td style="color:var(--w2-dark);font-weight:600">167,872</td>
+          <td style="color:var(--w2-dark);font-weight:600">79,421</td>
+        </tr>
+        <tr>
+          <td><strong>Day 2</strong></td>
+          <td style="font-weight:700">1,874</td><td style="font-weight:700">149,698</td><td style="font-weight:700">71,210</td>
+          <td style="border-left:2px solid var(--gray-line)">1,908</td>
+          <td>152,550</td><td>72,584</td>
+        </tr>
+        <tr>
+          <td><strong>Day 3</strong></td>
+          <td style="color:var(--gray-mid)">1,295</td><td style="color:var(--gray-mid)">103,160</td><td style="color:var(--gray-mid)">49,215</td>
+          <td style="border-left:2px solid var(--gray-line);color:var(--gray-mid)">1,286</td>
+          <td style="color:var(--gray-mid)">101,587</td><td style="color:var(--gray-mid)">48,888</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td>Total</td>
+          <td>4,553</td><td>365,864</td><td>173,014</td>
+          <td style="border-left:2px solid var(--gray-line);color:var(--w2-dark)">5,284</td>
+          <td style="color:var(--w2-dark)">422,009</td>
+          <td style="color:var(--w2-dark)">200,893</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- HOURLY COMPARISON -->
+  <div class="section-label">Hourly Distribution — Week-over-Week</div>
+  <div class="card">
+    <div class="card-title">Redemptions by Hour — Both Weeks</div>
+    <div class="card-sub">Red = Week 1 · Green = Week 2 · Peak shifted from 09:00 (Wk1) to 08:00 (Wk2)</div>
+    <div style="position:relative;height:240px"><canvas id="hourlyCompareChart"></canvas></div>
+  </div>
+
+  <!-- CATEGORY COMPARISON -->
+  <div class="section-label">Sales by Category — Week-over-Week</div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Category Net Sales ex.vat Comparison (฿)</div>
+      <div class="card-sub">Coffee / Tea / Cocoa / Other — both weeks</div>
+      <div style="position:relative;height:240px"><canvas id="categoryCompareChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Category Summary Table</div>
+      <div class="card-sub">Net Sales ex.vat (THB) and share %</div>
+      <table>
+        <thead><tr><th>Category</th><th>Wk1 (฿)</th><th>Wk1 %</th><th>Wk2 (฿)</th><th>Wk2 %</th><th>Delta</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Coffee</strong></td>
+            <td>206,385</td><td>57.1%</td>
+            <td style="color:var(--w2-dark);font-weight:600">245,918</td><td>58.8%</td>
+            <td class="d-up">+39,533</td>
+          </tr>
+          <tr>
+            <td><strong>Tea</strong></td>
+            <td>92,643</td><td>25.6%</td>
+            <td style="color:var(--w2-dark);font-weight:600">101,418</td><td>24.2%</td>
+            <td class="d-up">+8,775</td>
+          </tr>
+          <tr>
+            <td><strong>Cocoa</strong></td>
+            <td>42,322</td><td>11.7%</td>
+            <td style="color:var(--w2-dark);font-weight:600">48,488</td><td>11.6%</td>
+            <td class="d-up">+6,166</td>
+          </tr>
+          <tr>
+            <td><strong>Other</strong></td>
+            <td>20,182</td><td>5.6%</td>
+            <td style="color:var(--w2-dark);font-weight:600">22,437</td><td>5.4%</td>
+            <td class="d-up">+2,255</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr><td>Total</td><td>361,532</td><td>100%</td><td style="color:var(--w2-dark)">418,261</td><td>100%</td><td class="d-up">+56,729</td></tr>
+        </tfoot>
+      </table>
+      <p style="font-size:11px;color:var(--gray-soft);margin-top:8px">Category share is stable WoW. Coffee share slightly increased (+1.7pp). Tea share slightly decreased (−1.4pp).</p>
+    </div>
+  </div>
+
+  <!-- PRODUCT COMPARISON -->
+  <div class="section-label">Top Products — Week-over-Week</div>
+  <div class="card">
+    <div class="card-title">Redemptions by Product — Week 1 vs Week 2</div>
+    <div class="card-sub">Top 5 products · R-variants merged</div>
+    <div style="position:relative;height:260px"><canvas id="productCompareChart"></canvas></div>
+  </div>
+
+  <!-- SHOP TYPE COMPARISON -->
+  <div class="section-label">Shop Type Breakdown — Week-over-Week</div>
+  <div class="grid-eq2">
+    <div class="card">
+      <div class="card-title">Redemptions by Store Format</div>
+      <div class="card-sub">FZ / COCO / CODO — Week 1 vs Week 2</div>
+      <div style="position:relative;height:220px"><canvas id="shopTypeCompareChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Store Format Detail</div>
+      <div class="card-sub">Redemptions and Net Sales ex.vat</div>
+      <table>
+        <thead><tr><th>Format</th><th>Wk1 Uses</th><th>Wk1 Sales (฿)</th><th>Wk2 Uses</th><th>Wk2 Sales (฿)</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong style="color:var(--red)">FZ</strong></td>
+            <td>3,111</td><td>249,447</td>
+            <td style="color:var(--w2-dark);font-weight:600">3,772</td>
+            <td style="color:var(--w2-dark);font-weight:600">143,895</td>
+          </tr>
+          <tr>
+            <td><strong>COCO</strong></td>
+            <td>1,115</td><td>90,721</td>
+            <td style="color:var(--w2-dark);font-weight:600">1,056</td>
+            <td style="color:var(--w2-dark)">40,245</td>
+          </tr>
+          <tr>
+            <td><strong>CODO</strong></td>
+            <td>327</td><td>25,695</td>
+            <td style="color:var(--w2-dark);font-weight:600">456</td>
+            <td style="color:var(--w2-dark);font-weight:600">18,320</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr><td>Total</td><td>4,553</td><td>365,863</td><td style="color:var(--w2-dark)">5,284</td><td style="color:var(--w2-dark)">202,460</td></tr>
+        </tfoot>
+      </table>
+      <p style="font-size:11px;color:var(--gray-soft);margin-top:8px">CODO participation improved +39.4% WoW (327→456 uses). COCO slightly declined (−5.3%).</p>
+    </div>
+  </div>
+
+  <!-- SUMMARY COMPARISON TABLE -->
+  <div class="section-label">Full KPI Summary — Week 1 vs Week 2</div>
+  <div class="card">
+    <div class="card-title">Campaign Performance Summary</div>
+    <div class="card-sub">All key metrics side-by-side with week-over-week change</div>
+    <table>
+      <thead><tr><th>Metric</th><th>Week 1 (15–17 Jun)</th><th>Week 2 (22–24 Jun)</th><th>WoW Change</th><th>Trend</th></tr></thead>
+      <tbody>
+        <tr><td>Total Redemptions</td><td>4,553</td><td style="color:var(--w2-dark);font-weight:600">5,284</td><td class="d-up">+731 (+16.1%)</td><td class="d-up">▲ Better</td></tr>
+        <tr><td>Unique Customers</td><td>4,307</td><td style="color:var(--w2-dark);font-weight:600">4,950</td><td class="d-up">+643 (+14.9%)</td><td class="d-up">▲ Better</td></tr>
+        <tr><td>Multi-use Rate</td><td>5.4%</td><td>6.3%</td><td class="d-down">+0.9pp</td><td class="d-flat">~ Slight increase</td></tr>
+        <tr><td>Net Promo Sales ex.vat</td><td>฿365,864</td><td style="color:var(--w2-dark);font-weight:600">฿422,008</td><td class="d-up">+฿56,144 (+15.3%)</td><td class="d-up">▲ Better</td></tr>
+        <tr><td>Total Discount ex.vat</td><td>฿173,014</td><td style="color:var(--red)">฿200,893</td><td class="d-down">+฿27,879 (+16.1%)</td><td class="d-down">▼ Higher Cost</td></tr>
+        <tr><td>Avg. Ticket ex.vat</td><td>฿80.4</td><td>฿79.9</td><td class="d-flat">−฿0.5 (−0.6%)</td><td class="d-flat">~ Stable<br><span style="font-size:10px;color:#999">vs Pay Day ฿83.8</span></td></tr>
+        <tr><td>Discount per Use ex.vat</td><td>฿38.0</td><td>฿38.0</td><td class="d-flat">No change</td><td class="d-flat">~ Stable</td></tr>
+        <tr><td>Discount Rate %</td><td>49.7%</td><td>49.8%</td><td class="d-flat">+0.1pp</td><td class="d-flat">~ Stable (High)</td></tr>
+        <tr><td>Shop Participation</td><td>65.0% (761 shops)</td><td style="color:var(--w2-dark);font-weight:600">70.8% (828 shops)</td><td class="d-up">+5.8pp (+67 shops)</td><td class="d-up">▲ Better</td></tr>
+        <tr><td>Peak Day</td><td>Day 2 (1,874)</td><td style="color:var(--w2-dark)">Day 1 (2,090)</td><td class="d-flat">Pattern shifted</td><td class="d-flat">~ Earlier Peak</td></tr>
+        <tr><td>Peak Hour</td><td>09:00 (848)</td><td style="color:var(--w2-dark)">08:00 (1,291)</td><td class="d-up">+443 at peak</td><td class="d-up">▲ Stronger Peak</td></tr>
+        <tr><td>Coffee Share</td><td>57.1%</td><td>58.8%</td><td class="d-up">+1.7pp</td><td class="d-up">▲ Slight increase</td></tr>
+        <tr><td>Tea Share</td><td>25.6%</td><td>24.2%</td><td class="d-down">−1.4pp</td><td class="d-down">▼ Slight decline</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- LINE OA COMPARISON -->
+  <div class="section-label">LINE OA Communication — Week-over-Week</div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">LINE OA KPI Comparison</div>
+      <div class="card-sub">Week 1 (15–17 Jun) vs Week 2 (22–24 Jun)</div>
+      <table>
+        <thead><tr><th>Metric</th><th>Week 1</th><th>Week 2</th><th>Delta</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Messages Sent</td>
+            <td>265,273</td>
+            <td style="color:var(--w2-dark);font-weight:600">274,513</td>
+            <td class="d-up">+9,240 (+3.5%)</td>
+          </tr>
+          <tr>
+            <td>Opens</td>
+            <td>93,465 <span style="color:var(--gray-soft);font-size:11px">(35.2%)</span></td>
+            <td style="color:var(--w2-dark);font-weight:600">95,071 <span style="font-size:11px">(34.6%)</span></td>
+            <td class="d-up">+1,606 (+1.7%)</td>
+          </tr>
+          <tr>
+            <td>Open Rate</td>
+            <td><strong>35.2%</strong></td>
+            <td>34.6%</td>
+            <td class="d-down">−0.6pp</td>
+          </tr>
+          <tr>
+            <td>Clicks</td>
+            <td><strong>16,515</strong> <span style="color:var(--gray-soft);font-size:11px">(6.2%)</span></td>
+            <td>15,325 <span style="font-size:11px">(5.6%)</span></td>
+            <td class="d-down">−1,190 (−7.2%)</td>
+          </tr>
+          <tr>
+            <td>CTR</td>
+            <td><strong>6.2%</strong></td>
+            <td>5.6%</td>
+            <td class="d-down">−0.6pp</td>
+          </tr>
+          <tr>
+            <td>CTOR</td>
+            <td><strong>17.7%</strong></td>
+            <td>16.1%</td>
+            <td class="d-down">−1.6pp</td>
+          </tr>
+          <tr>
+            <td>Click → Redeem</td>
+            <td>27.6%</td>
+            <td style="color:var(--w2-dark);font-weight:600">34.5%</td>
+            <td class="d-up">+6.9pp ▲ Strong</td>
+          </tr>
+          <tr>
+            <td>Overall Conv. Rate</td>
+            <td>1.72%</td>
+            <td style="color:var(--w2-dark);font-weight:600">1.92%</td>
+            <td class="d-up">+0.20pp</td>
+          </tr>
+          <tr>
+            <td>Revenue per Click (฿)</td>
+            <td>22.2 ฿</td>
+            <td style="color:var(--w2-dark);font-weight:600">27.5 ฿</td>
+            <td class="d-up">+5.3 ฿ (+24%)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-title">LINE OA Funnel Comparison</div>
+      <div class="card-sub">Funnel volume — both weeks</div>
+      <div style="position:relative;height:260px"><canvas id="lineOAChart"></canvas></div>
+      <p style="font-size:11px;color:var(--gray-soft);margin-top:12px">
+        Week 2 had fewer clicks (−7.2%) but significantly higher Click→Redeem rate (+6.9pp = 34.5% vs 27.6%).
+        Each click generated ฿27.5 revenue vs ฿22.2 in Wk1 (+24%). Signal: customers clicking are more intent-driven.
+      </p>
+    </div>
+  </div>
+
+  <!-- REDEMPTION RATE BENCHMARK -->
+  <div class="section-label">Redemption Rate — Benchmark Comparison (Both Weeks)</div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Redemption Rate — Week-over-Week</div>
+      <div class="card-sub">Formula: Coupons Redeemed ÷ Coupons Distributed × 100</div>
+      <table style="margin-top:8px">
+        <thead><tr><th>Measurement Basis</th><th>Week 1</th><th>Week 2</th><th>WoW</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>From Sent</strong><br><span style="font-size:10px;color:var(--gray-soft)">Redeemed ÷ LINE OA Sent</span></td>
+            <td style="text-align:right">1.72%<br><span style="font-size:10px;color:var(--gray-soft)">4,553÷265,273</span></td>
+            <td style="text-align:right;color:var(--w2-dark);font-weight:600">1.92%<br><span style="font-size:10px;color:var(--gray-soft)">5,284÷274,513</span></td>
+            <td class="d-up">+0.20pp</td>
+          </tr>
+          <tr style="background:var(--red-pale)">
+            <td><strong>From Clicked</strong><br><span style="font-size:10px;color:var(--gray-soft)">Redeemed ÷ Coupon Claimed</span></td>
+            <td style="text-align:right;font-weight:700">27.6%<br><span style="font-size:10px;color:var(--gray-soft)">4,553÷16,515</span></td>
+            <td style="text-align:right;color:var(--w2-dark);font-weight:700">34.5%<br><span style="font-size:10px;color:var(--gray-soft)">5,284÷15,325</span></td>
+            <td class="d-up">+6.9pp ▲</td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="font-size:11px;color:var(--gray-soft);margin-top:10px;line-height:1.6">
+        Both rates improved WoW. Rate from Sent +0.20pp (more members reached redemption). Rate from Clicked +6.9pp (higher intent among claimers). Offer quality is strengthening week-over-week.
+      </p>
+    </div>
+    <div class="card">
+      <div class="card-title">Industry Benchmark — Digital Coupon</div>
+      <div class="card-sub">Source: DemandSage, Opensend</div>
+      <table>
+        <thead><tr><th>Coupon Type</th><th>Benchmark</th><th>Wk1</th><th>Wk2</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Mass Coupon</td>
+            <td style="text-align:right">1–5%</td>
+            <td style="text-align:right">1.72%</td>
+            <td style="text-align:right">1.92%</td>
+            <td style="text-align:right"><span class="badge b-ok">In Range</span></td>
+          </tr>
+          <tr>
+            <td>Standard Digital</td>
+            <td style="text-align:right">7%+</td>
+            <td style="text-align:right">1.72%</td>
+            <td style="text-align:right">1.92%</td>
+            <td style="text-align:right"><span class="badge b-warn">Below</span></td>
+          </tr>
+          <tr>
+            <td>Personalized Offer</td>
+            <td style="text-align:right">8–15%+</td>
+            <td style="text-align:right">1.72%</td>
+            <td style="text-align:right">1.92%</td>
+            <td style="text-align:right"><span class="badge b-warn">Below</span></td>
+          </tr>
+          <tr>
+            <td>CRM / Loyalty Active</td>
+            <td style="text-align:right">10–25%</td>
+            <td style="text-align:right">1.72%</td>
+            <td style="text-align:right">1.92%</td>
+            <td style="text-align:right"><span class="badge b-warn">Below</span></td>
+          </tr>
+          <tr style="background:var(--red-pale)">
+            <td><strong>Strong Offer / Urgency</strong></td>
+            <td style="text-align:right"><strong>20–40%+</strong></td>
+            <td style="text-align:right"><strong>27.6%</strong></td>
+            <td style="text-align:right"><strong style="color:var(--w2-dark)">34.5%</strong></td>
+            <td style="text-align:right"><span class="badge b-good">Exceeds</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="font-size:10px;color:var(--gray-soft);margin-top:10px">
+        This campaign = Personalized + CRM via LINE OA. Gap vs benchmark (from Sent) is driven by CTR — not offer quality. Priority: improve Open Rate &amp; CTR to push Redemption Rate from Sent toward 8%+.
+      </p>
+    </div>
+  </div>
+
+  <!-- KEY INSIGHTS -->
+  <div class="section-label">Key Insights — Week-over-Week</div>
+  <div class="insight-grid">
+    <div class="insight-box">
+      <div class="insight-icon ic-up">+16%</div>
+      <div>
+        <div class="insight-title">Strong Volume Growth — All Metrics Up</div>
+        <div class="insight-desc">Redemptions +16.1%, Unique Customers +14.9%, Net Sales +15.3%. The campaign is building momentum week-over-week. No sign of fatigue yet.</div>
+      </div>
+    </div>
+    <div class="insight-box">
+      <div class="insight-icon ic-up">D1</div>
+      <div>
+        <div class="insight-title">Week 2 Peaked Earlier on Day 1</div>
+        <div class="insight-desc">Day 1 of Wk2 (2,090) was 51% higher than Day 1 of Wk1 (1,384). Growing customer awareness means more people are redeeming immediately on Day 1 rather than waiting.</div>
+      </div>
+    </div>
+    <div class="insight-box">
+      <div class="insight-icon ic-up">8AM</div>
+      <div>
+        <div class="insight-title">Peak Hour Shifted Earlier: 09:00 → 08:00</div>
+        <div class="insight-desc">Wk2 peak was 08:00 (1,291) vs Wk1 09:00 (848). Volume also 52% higher at peak. Morning rush is intensifying — ensure staff and stock readiness by 07:30.</div>
+      </div>
+    </div>
+    <div class="insight-box">
+      <div class="insight-icon ic-up">+68</div>
+      <div>
+        <div class="insight-title">67 More Shops Participating in Week 2</div>
+        <div class="insight-desc">828 shops active vs 761 in Wk1. Participation rate improved from 65.0% to 70.8% (+5.8pp). Momentum is building but still 342 shops (29.2%) remain inactive vs 80% target.</div>
+      </div>
+    </div>
+    <div class="insight-box">
+      <div class="insight-icon ic-flat">฿80</div>
+      <div>
+        <div class="insight-title">Avg. Ticket Stable at ~฿80</div>
+        <div class="insight-desc">฿79.9 in Wk2 vs ฿80.4 in Wk1 — essentially flat (−0.6%). Sales growth is purely volume-driven. Customers are not spending more per visit — promotion is attracting additional visits, not upsell.</div>
+      </div>
+    </div>
+    <div class="insight-box">
+      <div class="insight-icon ic-warn">49%</div>
+      <div>
+        <div class="insight-title">Discount Rate Unchanged at ~49.8%</div>
+        <div class="insight-desc">Despite volume growth, discount rate holds at 49.8% (vs 49.7% in Wk1). Total discount cost grew proportionally +16.1%. Cap mechanism needs review before campaign extends further.</div>
+      </div>
+    </div>
+    <div class="insight-box">
+      <div class="insight-icon ic-down">COCO</div>
+      <div>
+        <div class="insight-title">COCO Redemptions Slightly Declined</div>
+        <div class="insight-desc">COCO dropped from 1,115 to 1,056 uses (−5.3%) while overall volume grew +16.1%. COCO's share fell from 24.5% to 20.0%. Targeted support for COCO stores recommended.</div>
+      </div>
+    </div>
+    <div class="insight-box">
+      <div class="insight-icon ic-up">CTR</div>
+      <div>
+        <div class="insight-title">Click→Redeem +6.9pp — Stronger Buyer Intent</div>
+        <div class="insight-desc">Week 2 Click→Redeem jumped from 27.6% to 34.5% despite CTR falling (6.2%→5.6%). Fewer but more intent-driven clicks. Revenue per Click rose +24% (฿22.2→฿27.5). Consider optimising message to attract more high-intent clickers.</div>
+      </div>
+    </div>
+    <div class="insight-box">
+      <div class="insight-icon ic-up">FZ</div>
+      <div>
+        <div class="insight-title">FZ Redemptions Up +21.2% WoW</div>
+        <div class="insight-desc">FZ stores grew from 3,111 to 3,772 redemptions (+661, +21.2%) — strongest growth across all formats. FZ share increased from 68.3% to 71.4%, reinforcing its dominant role in campaign performance.</div>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+  <div class="footer">
+    <strong>Inthanin</strong> — Personalize Promotion · Week-over-Week Comparison Dashboard &nbsp;·&nbsp; Week 1: 15–17 Jun 2026 vs Week 2: 22–24 Jun 2026 &nbsp;·&nbsp; Prepared by NAI
+  </div>
+</div>
+
+<script>
+Chart.register(ChartDataLabels);
+
+const C = {
+  red:    '#3EB655',
+  redLt:  '#d4f0d9',
+  green:  '#FFF100',
+  greenLt:'#fffde0',
+  black:  '#111111',
+  font:   'Sarabun',
+};
+
+const noDL = { datalabels:{ display:false } };
+
+/* ── 1. Daily Comparison ── */
+new Chart(document.getElementById('dailyCompareChart'), {
+  type:'bar',
+  data:{
+    labels:['Day 1','Day 2','Day 3'],
+    datasets:[
+      { label:'Week 1 (15–17 Jun)', data:[1384,1874,1295],
+        backgroundColor:C.red, borderRadius:4 },
+      { label:'Week 2 (22–24 Jun)', data:[2090,1908,1286],
+        backgroundColor:C.green, borderRadius:4 }
+    ]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    plugins:{
+      legend:{ labels:{ font:{family:C.font} } },
+      datalabels:{
+        anchor:'end', align:'end', offset:2, clip:false,
+        font:{family:C.font, size:11, weight:'600'}, color:'#444',
+        formatter: v => v >= 1000 ? (v/1000).toFixed(1)+'K' : v
+      }
+    },
+    scales:{
+      y:{ beginAtZero:true, max:2400, ticks:{font:{family:C.font}}, grid:{color:'#f0f0f0'} },
+      x:{ ticks:{font:{family:C.font}}, grid:{display:false} }
+    }
+  }
+});
+
+/* ── 2. Hourly Comparison ── */
+new Chart(document.getElementById('hourlyCompareChart'), {
+  type:'bar',
+  data:{
+    labels:['06','07','08','09','10','11','12','13','14','15','16','17','18+'],
+    datasets:[
+      { label:'Week 1 (15–17 Jun)', data:[130,495,653,848,636,422,494,312,218,125,83,51,55],
+        backgroundColor:'rgba(62,182,85,0.7)', borderRadius:3 },
+      { label:'Week 2 (22–24 Jun)', data:[175,952,1291,696,477,382,474,303,194,123,67,58,29],
+        backgroundColor:'rgba(255,241,0,0.75)', borderRadius:3 }
+    ]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    plugins:{
+      legend:{ labels:{ font:{family:C.font} } },
+      datalabels:{ display:false }
+    },
+    scales:{
+      y:{ beginAtZero:true, ticks:{font:{family:C.font}}, grid:{color:'#f0f0f0'} },
+      x:{ ticks:{font:{family:C.font},maxRotation:0}, grid:{display:false} }
+    }
+  }
+});
+
+/* ── 3. Category Comparison ── */
+new Chart(document.getElementById('categoryCompareChart'), {
+  type:'bar',
+  data:{
+    labels:['Coffee','Tea','Cocoa','Other'],
+    datasets:[
+      { label:'Week 1 (ex.vat ฿)', data:[206385,92643,42322,20182],
+        backgroundColor:'rgba(62,182,85,0.75)', borderRadius:4 },
+      { label:'Week 2 (ex.vat ฿)', data:[245918,101418,48488,22437],
+        backgroundColor:'rgba(255,241,0,0.75)', borderRadius:4 }
+    ]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    plugins:{
+      legend:{ labels:{ font:{family:C.font} } },
+      datalabels:{
+        anchor:'end', align:'end', offset:2, clip:false,
+        font:{family:C.font, size:10, weight:'600'}, color:'#444',
+        formatter: v => Math.round(v/1000)+'K'
+      }
+    },
+    scales:{
+      y:{ beginAtZero:true, ticks:{font:{family:C.font}, callback:v=>'฿'+(v/1000).toFixed(0)+'K'}, grid:{color:'#f0f0f0'} },
+      x:{ ticks:{font:{family:C.font}}, grid:{display:false} }
+    }
+  }
+});
+
+/* ── 4. Product Comparison ── */
+new Chart(document.getElementById('productCompareChart'), {
+  type:'bar',
+  data:{
+    labels:['Americano Iced','Cocoa Iced','Espresso Iced','Thai Tea Latte Iced','Green Tea Latte Iced'],
+    datasets:[
+      { label:'Week 1 Redemptions', data:[2149,726,601,588,486],
+        backgroundColor:'rgba(62,182,85,0.8)', borderRadius:4 },
+      { label:'Week 2 Redemptions', data:[2551,835,719,666,511],
+        backgroundColor:'rgba(255,241,0,0.8)', borderRadius:4 }
+    ]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    plugins:{
+      legend:{ labels:{ font:{family:C.font} } },
+      datalabels:{
+        anchor:'end', align:'end', offset:2, clip:false,
+        font:{family:C.font, size:11, weight:'600'}, color:'#444',
+        formatter: v => v >= 1000 ? (v/1000).toFixed(1)+'K' : v
+      }
+    },
+    scales:{
+      y:{ beginAtZero:true, ticks:{font:{family:C.font}}, grid:{color:'#f0f0f0'} },
+      x:{ ticks:{font:{family:C.font}, maxRotation:25}, grid:{display:false} }
+    }
+  }
+});
+
+/* ── 5b. LINE OA Funnel ── */
+new Chart(document.getElementById('lineOAChart'), {
+  type:'bar',
+  data:{
+    labels:['Sent','Opens','Clicks','Redeemed'],
+    datasets:[
+      { label:'Week 1', data:[265273,93465,16515,4553],
+        backgroundColor:'rgba(62,182,85,0.8)', borderRadius:4 },
+      { label:'Week 2', data:[274513,95071,15325,5284],
+        backgroundColor:'rgba(255,241,0,0.8)', borderRadius:4 }
+    ]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    plugins:{
+      legend:{ labels:{ font:{family:C.font} } },
+      datalabels:{
+        anchor:'end', align:'end', offset:2, clip:false,
+        font:{family:C.font, size:10, weight:'600'}, color:'#444',
+        formatter: v => v >= 1000 ? Math.round(v/1000)+'K' : v
+      }
+    },
+    scales:{
+      y:{ beginAtZero:true, ticks:{font:{family:C.font}, callback:v=>v>=1000?Math.round(v/1000)+'K':v}, grid:{color:'#f0f0f0'} },
+      x:{ ticks:{font:{family:C.font}}, grid:{display:false} }
+    }
+  }
+});
+
+/* ── 5. Shop Type Comparison ── */
+new Chart(document.getElementById('shopTypeCompareChart'), {
+  type:'bar',
+  data:{
+    labels:['FZ','COCO','CODO'],
+    datasets:[
+      { label:'Week 1', data:[3111,1115,327],
+        backgroundColor:'rgba(62,182,85,0.8)', borderRadius:4 },
+      { label:'Week 2', data:[3772,1056,456],
+        backgroundColor:'rgba(255,241,0,0.8)', borderRadius:4 }
+    ]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    plugins:{
+      legend:{ labels:{ font:{family:C.font} } },
+      datalabels:{
+        anchor:'end', align:'end', offset:2, clip:false,
+        font:{family:C.font, size:11, weight:'600'}, color:'#444',
+        formatter: v => v >= 1000 ? (v/1000).toFixed(1)+'K' : v
+      }
+    },
+    scales:{
+      y:{ beginAtZero:true, ticks:{font:{family:C.font}}, grid:{color:'#f0f0f0'} },
+      x:{ ticks:{font:{family:C.font}}, grid:{display:false} }
+    }
+  }
+});
+</script>
+</html>
